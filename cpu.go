@@ -85,6 +85,20 @@ func (c *cpuController) Update(path string, resources *specs.LinuxResources) err
 }
 
 func (c *cpuController) Stat(path string, stats *Metrics) error {
+	var err error
+	if stats.CPU.Quota.PeriodUs, err = readUint(filepath.Join(c.Path(path), "cpu.cfs_period_us")); err != nil {
+		return err
+	}
+	if stats.CPU.Quota.QuotaUs, err = readUint(filepath.Join(c.Path(path), "cpu.cfs_quota_us")); err != nil {
+		return err
+	}
+	if stats.CPU.Shares, err = readUint(filepath.Join(c.Path(path), "cpu.shares")); err != nil {
+		return err
+	}
+	return c.cpuStat(path, stats)
+}
+
+func (c *cpuController) cpuStat(path string, stats *Metrics) error {
 	f, err := os.Open(filepath.Join(c.Path(path), "cpu.stat"))
 	if err != nil {
 		return err

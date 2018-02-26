@@ -172,6 +172,7 @@ func (c *cgroup) Stat(handlers ...ErrorHandler) (*Metrics, error) {
 		stats = &Metrics{
 			CPU: &CPUStat{
 				Throttling: &Throttle{},
+				Quota: 	    &CfsQuota{},
 				Usage:      &CPUUsage{},
 			},
 		}

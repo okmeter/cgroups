@@ -27,6 +27,8 @@ message PidsStat {
 message CPUStat {
 	CPUUsage usage = 1;
 	Throttle throttling = 2;
+	uint64 shares = 3;
+	CfsQuota quota = 4;
 }
 
 message CPUUsage {
@@ -35,13 +37,17 @@ message CPUUsage {
 	uint64 kernel = 2;
 	uint64 user = 3;
 	repeated uint64 per_cpu = 4 [(gogoproto.customname) = "PerCPU"];
-
 }
 
 message Throttle {
 	uint64 periods = 1;
 	uint64 throttled_periods = 2;
 	uint64 throttled_time = 3;
+}
+
+message CfsQuota {
+	uint64 period_us = 1;
+	uint64 quota_us = 2;
 }
 
 message MemoryStat {
