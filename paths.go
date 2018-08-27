@@ -21,6 +21,7 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
+	"strconv"
 )
 
 type Path func(subsystem Name) (string, error)
@@ -39,7 +40,7 @@ func StaticPath(path string) Path {
 // NestedPath will nest the cgroups based on the calling processes cgroup
 // placing its child processes inside its own path
 func NestedPath(suffix string) Path {
-	paths, err := parseCgroupFile("/proc/self/cgroup")
+	paths, err := parseCgroupFile(filepath.Join(getProcPath(), "self/cgroup"))
 	if err != nil {
 		return errorPath(err)
 	}
@@ -49,7 +50,7 @@ func NestedPath(suffix string) Path {
 // PidPath will return the correct cgroup paths for an existing process running inside a cgroup
 // This is commonly used for the Load function to restore an existing container
 func PidPath(pid int) Path {
-	p := fmt.Sprintf("/proc/%d/cgroup", pid)
+	p := filepath.Join(getProcPath(), strconv.Itoa(pid), "cgroup")
 	paths, err := parseCgroupFile(p)
 	if err != nil {
 		return errorPath(errors.Wrapf(err, "parse cgroup file %s", p))

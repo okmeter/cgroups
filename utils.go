@@ -36,7 +36,7 @@ var isUserNS = runningInUserNS()
 // runningInUserNS detects whether we are currently running in a user namespace.
 // Copied from github.com/lxc/lxd/shared/util.go
 func runningInUserNS() bool {
-	file, err := os.Open("/proc/self/uid_map")
+	file, err := os.Open(filepath.Join(getProcPath(), "self/uid_map"))
 	if err != nil {
 		// This kernel-provided file only exists if user namespaces are supported
 		return false
@@ -233,7 +233,7 @@ func parseCgroupFromReader(r io.Reader) (map[string]string, error) {
 }
 
 func getCgroupDestination(subsystem string) (string, error) {
-	f, err := os.Open("/proc/self/mountinfo")
+	f, err := os.Open(filepath.Join(getProcPath(), "self/mountinfo"))
 	if err != nil {
 		return "", err
 	}
@@ -294,4 +294,11 @@ func cleanPath(path string) string {
 		path, _ = filepath.Rel(string(os.PathSeparator), filepath.Clean(string(os.PathSeparator)+path))
 	}
 	return filepath.Clean(path)
+}
+
+func getProcPath() string {
+	if fromEnv := os.Getenv("HOST_PROC"); fromEnv != "" {
+		return fromEnv
+	}
+	return "/proc"
 }

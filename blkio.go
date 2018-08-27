@@ -121,7 +121,7 @@ func (b *blkioController) Stat(path string, stats *Metrics) error {
 			},
 		)
 	}
-	f, err := os.Open("/proc/diskstats")
+	f, err := os.Open(filepath.Join(getProcPath(), "diskstats"))
 	if err != nil {
 		return err
 	}
